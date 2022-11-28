@@ -22,8 +22,8 @@ public class Kalender extends JFrame {
     private boolean selectMode = false;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
-    private final String saveFile ="D:\\programming\\timer\\Kalender\\Resources\\KalenderWerte";
-    private final String csvFile ="D:\\programming\\timer\\Kalender\\Resources\\Kalender.csv";
+    private final String saveFile ="Resources\\KalenderWerte";
+    private final String csvFile ="Resources\\Kalender.csv";
     private Printer printer;
     private Color first, second, third;
     public Kalender(){
