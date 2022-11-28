@@ -7,7 +7,7 @@ import java.util.List;
 
 public class MultiSelectWindow extends JPanel {
 
-    private javax.swing.JButton applyButton, cancelButton, moveDown, moveUp, clearCurrent, clearAll,cloneOne ,cloneTwo, cloneThree, cloneFour;
+    private javax.swing.JButton  cancelButton, moveDown, moveUp, clearCurrent, clearAll,cloneOne ,cloneTwo, cloneThree, cloneFour;
     private JToggleButton weekOne,weekTwo,weekThree,  weekFour;
     private javax.swing.JRadioButton arbeitButton, colorButton, essenButton, freiButton, gitarreButton, lernenButton, otherButton, otherNameButton, sportButton, uniButton;
     private javax.swing.JComboBox<String> colourSelecter;
@@ -16,6 +16,7 @@ public class MultiSelectWindow extends JPanel {
     private Color[] colors = new Color[10];
     ButtonGroup kalenderInbutButtons, weekButtons;
     Kalender parent;
+    private final int parentSizer = 230;
 
     LinkedList<JButton> selected;
     MultiSelectWindow( Kalender kalender){
@@ -24,7 +25,7 @@ public class MultiSelectWindow extends JPanel {
         buildButtons();
         buildLayout();
 
-        parent.setSize(parent.getWidth()+220, parent.getHeight());
+        parent.setSize(parent.getWidth()+ parentSizer, parent.getHeight());
 
     }
 
@@ -114,8 +115,7 @@ public class MultiSelectWindow extends JPanel {
 
         cancelButton =new JButton();
         cancelButton.addActionListener(new CancelListener());
-        applyButton = new javax.swing.JButton();
-        applyButton.addActionListener(new ApplyListener());
+
 
         otherTextField = new javax.swing.JTextField();
         otherTextField.setEnabled(false);
@@ -135,7 +135,7 @@ public class MultiSelectWindow extends JPanel {
         colorButton.setText("Color");
         otherTextField.setText("");
         cancelButton.setText("Cancel");
-        applyButton.setText("Apply");
+
 
         clearCurrent.setText("Clear Current");
         moveUp.setText("Move Up");
@@ -213,9 +213,10 @@ public class MultiSelectWindow extends JPanel {
     }
 
     public void close(){
+        parent.resetMarkMode();
         parent.setSelectMode(false);
         setVisible(false);
-        parent.setSize(parent.getWidth()-getWidth(), parent.getHeight());
+        parent.setSize(parent.getWidth()-parentSizer, parent.getHeight());
     }
 
 
@@ -328,7 +329,7 @@ public class MultiSelectWindow extends JPanel {
                                         .addGroup(BigPaneLayout.createSequentialGroup()
                                                 .addComponent(cancelButton)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(applyButton)
+
                                                 .addContainerGap())))
         );
         BigPaneLayout.setVerticalGroup(
@@ -384,7 +385,7 @@ public class MultiSelectWindow extends JPanel {
                                         .addComponent(clearAll))
                                 .addGap(40, 40, 40)
                                 .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(applyButton)
+
                                         .addComponent(cancelButton))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
