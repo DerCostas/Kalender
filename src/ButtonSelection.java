@@ -81,15 +81,8 @@ public class ButtonSelection extends JDialog {
         jRadioButton9.addActionListener(new AuswahlListener() );
         jRadioButton10 = new javax.swing.JRadioButton();
         jRadioButton10.addActionListener(new AuswahlListener() );
-        jRadioButton1.setBackground(colors[0]);
-        jRadioButton2.setBackground(colors[1]);
-        jRadioButton3.setBackground(colors[2]);
-        jRadioButton4.setBackground(colors[8]);
-        jRadioButton5.setBackground(colors[9]);
-        jRadioButton6.setBackground(colors[5]);
-        jRadioButton7.setBackground(colors[6]);
-        jRadioButton8.setBackground(colors[7]);
-        jRadioButton9.setBackground(colors[3]);
+
+        // jRadioButton9= Colors.colourRadioButtons(jRadioButton9);
 
         buttonGroup = new ButtonGroup();
         buttonGroup.add(jRadioButton1);
@@ -126,6 +119,15 @@ public class ButtonSelection extends JDialog {
         jTextField1.setText("");
         jButton1.setText("Cancel");
         jButton2.setText("Apply");
+
+        jRadioButton1= Colors.colourRadioButtons(jRadioButton1);
+        jRadioButton2= Colors.colourRadioButtons(jRadioButton2);
+        jRadioButton3= Colors.colourRadioButtons(jRadioButton3);
+        jRadioButton4= Colors.colourRadioButtons(jRadioButton4);
+        jRadioButton5= Colors.colourRadioButtons(jRadioButton5);
+        jRadioButton6= Colors.colourRadioButtons(jRadioButton6);
+        jRadioButton7= Colors.colourRadioButtons(jRadioButton7);
+        jRadioButton8= Colors.colourRadioButtons(jRadioButton8);
 
         jButton1.addActionListener(new CancelListener());
         jButton2.addActionListener(new ApplyListener());

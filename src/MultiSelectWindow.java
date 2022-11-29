@@ -7,16 +7,17 @@ import java.util.List;
 
 public class MultiSelectWindow extends JPanel {
 
-    private javax.swing.JButton  cancelButton, moveDown, moveUp, clearCurrent, clearAll,cloneOne ,cloneTwo, cloneThree, cloneFour;
+    private javax.swing.JButton  cancelButton, moveDown, moveUp, clearCurrent, clearAll,cloneOne ,cloneTwo, cloneThree, cloneFour, applyButton;
     private JToggleButton weekOne,weekTwo,weekThree,  weekFour;
     private javax.swing.JRadioButton arbeitButton, colorButton, essenButton, freiButton, gitarreButton, lernenButton, otherButton, otherNameButton, sportButton, uniButton;
     private javax.swing.JComboBox<String> colourSelecter;
-    private javax.swing.JScrollPane CellsTopEditScrollPane;
+    private JRadioButton currentlySelected;
     private javax.swing.JTextField otherTextField;
     private Color[] colors = new Color[10];
     ButtonGroup kalenderInbutButtons, weekButtons;
     Kalender parent;
-    private final int parentSizer = 230;
+    private JPanel weeksPanel, cellEditPanel;
+    private final int parentSizer = 240;
 
     LinkedList<JButton> selected;
     MultiSelectWindow( Kalender kalender){
@@ -33,10 +34,12 @@ public class MultiSelectWindow extends JPanel {
     public void addToList(JButton button){
         selected.add(button);
     }
+    public void removeFromList(JButton button){
+        selected.remove(button);
+    }
+
 
     public void buildButtons(){
-        CellsTopEditScrollPane = new JScrollPane();
-
         freiButton = new javax.swing.JRadioButton();
         freiButton.addActionListener(new AuswahlListener() );
         uniButton = new javax.swing.JRadioButton();
@@ -84,6 +87,8 @@ public class MultiSelectWindow extends JPanel {
         weekButtons.add(weekThree);
         weekButtons.add(weekFour);
 
+        weeksPanel = new javax.swing.JPanel();
+        cellEditPanel = new javax.swing.JPanel();
 
         moveUp = new javax.swing.JButton();
         moveUp.addActionListener(new MoveListener());
@@ -111,7 +116,8 @@ public class MultiSelectWindow extends JPanel {
         clearCurrent.addActionListener(new ClearListener());
 
 
-
+       applyButton =new JButton();
+        applyButton.addActionListener(new ApplyListener());
 
         cancelButton =new JButton();
         cancelButton.addActionListener(new CancelListener());
@@ -135,6 +141,18 @@ public class MultiSelectWindow extends JPanel {
         colorButton.setText("Color");
         otherTextField.setText("");
         cancelButton.setText("Cancel");
+        applyButton.setText("Apply");
+
+        freiButton = Colors.colourRadioButtons(freiButton);
+        uniButton = Colors.colourRadioButtons(uniButton);
+        lernenButton = Colors.colourRadioButtons(lernenButton);
+        sportButton = Colors.colourRadioButtons(sportButton);
+        gitarreButton = Colors.colourRadioButtons(gitarreButton);
+        essenButton = Colors.colourRadioButtons(essenButton);
+        arbeitButton = Colors.colourRadioButtons(arbeitButton);
+        otherButton = Colors.colourRadioButtons(otherButton);
+
+
 
 
         clearCurrent.setText("Clear Current");
@@ -184,7 +202,29 @@ public class MultiSelectWindow extends JPanel {
     private class ApplyListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            close();
+            JButton temp = new JButton();
+            if(otherNameButton.isSelected()){
+                temp.setText(otherTextField.getText());
+            }else{
+                if(currentlySelected != null){
+                    temp.setText(currentlySelected.getText());
+                }
+
+            }
+            if(colorButton.isSelected()){
+                temp.setBackground(Colors.stringToColor(colourSelecter.getItemAt(colourSelecter.getSelectedIndex())));
+                System.out.println("test");
+            }else{
+                if(currentlySelected != null) {
+                    temp.setBackground(currentlySelected.getBackground());
+                }
+            }
+            for(int i = 0; i< selected.size(); i++){
+                selected.get(i).setText(temp.getText());
+                selected.get(i).setBackground(temp.getBackground());
+            }
+            selected = new LinkedList<JButton>();
+            currentlySelected = null;
         }
     }
 
@@ -193,13 +233,16 @@ public class MultiSelectWindow extends JPanel {
         public void actionPerformed(ActionEvent e) {
             if(otherNameButton.isSelected()){
                 otherTextField.setEnabled(true);
-            }else {
+            }else{
                 otherTextField.setEnabled(true);
-            }
-            if(colorButton.isSelected()){
+            }if(colorButton.isSelected()){
                 colourSelecter.setEnabled(true);
             }else {
                 colourSelecter.setEnabled(false);
+            }
+            JRadioButton button = (JRadioButton) e.getSource();
+            if(!button.equals(colorButton) && !button.equals(otherNameButton)&& button.isSelected()){
+                currentlySelected = button;
             }
         }
     }
@@ -207,13 +250,12 @@ public class MultiSelectWindow extends JPanel {
     private class CancelListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            close();
-
+            parent.resetMarkMode(false);
         }
     }
 
     public void close(){
-        parent.resetMarkMode();
+        parent.resetMarkMode(true);
         parent.setSelectMode(false);
         setVisible(false);
         parent.setSize(parent.getWidth()-parentSizer, parent.getHeight());
@@ -261,7 +303,139 @@ public class MultiSelectWindow extends JPanel {
         return selected;
     }
 
-    public void buildLayout(){
+    public void buildLayout() {
+
+        javax.swing.GroupLayout cellEditPanelLayout = new javax.swing.GroupLayout(cellEditPanel);
+        cellEditPanel.setLayout(cellEditPanelLayout);
+        cellEditPanelLayout.setHorizontalGroup(
+                cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(cellEditPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(cellEditPanelLayout.createSequentialGroup()
+                                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(lernenButton)
+                                                        .addComponent(freiButton)
+                                                        .addComponent(gitarreButton)
+                                                        .addComponent(arbeitButton))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cellEditPanelLayout.createSequentialGroup()
+                                                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(sportButton)
+                                                                        .addComponent(uniButton))
+                                                                .addGap(2, 2, 2))
+                                                        .addComponent(essenButton)
+                                                        .addComponent(otherButton))
+                                                .addGap(32, 32, 32))
+                                        .addGroup(cellEditPanelLayout.createSequentialGroup()
+                                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(otherNameButton)
+                                                        .addComponent(colorButton))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(otherTextField)
+                                                        .addComponent(colourSelecter, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(cellEditPanelLayout.createSequentialGroup()
+                                                .addComponent(cancelButton)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(applyButton))))
+        );
+        cellEditPanelLayout.setVerticalGroup(
+                cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(cellEditPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(uniButton)
+                                        .addComponent(freiButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lernenButton)
+                                        .addComponent(sportButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(gitarreButton)
+                                        .addComponent(essenButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(arbeitButton)
+                                        .addComponent(otherButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(otherNameButton)
+                                        .addComponent(otherTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(colorButton)
+                                        .addComponent(colourSelecter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(12, 12, 12)
+                                .addGroup(cellEditPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cancelButton)
+                                        .addComponent(applyButton))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        javax.swing.GroupLayout weeksPanelLayout = new javax.swing.GroupLayout(weeksPanel);
+        weeksPanel.setLayout(weeksPanelLayout);
+        weeksPanelLayout.setHorizontalGroup(
+                weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(weeksPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(weeksPanelLayout.createSequentialGroup()
+                                                .addComponent(weekThree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(cloneThree))
+                                        .addGroup(weeksPanelLayout.createSequentialGroup()
+                                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(weekOne, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(weekTwo, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(18, 24, Short.MAX_VALUE)
+                                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(cloneOne, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(cloneTwo, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, weeksPanelLayout.createSequentialGroup()
+                                                .addComponent(weekFour, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(10, 10, 10)
+                                                .addComponent(cloneFour, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, weeksPanelLayout.createSequentialGroup()
+                                                .addComponent(moveUp, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(moveDown))
+                                        .addGroup(weeksPanelLayout.createSequentialGroup()
+                                                .addComponent(clearCurrent)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(clearAll)))
+                                .addContainerGap())
+        );
+        weeksPanelLayout.setVerticalGroup(
+                weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(weeksPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(weekOne)
+                                        .addComponent(cloneOne))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(weekTwo)
+                                        .addComponent(cloneTwo))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(weekThree)
+                                        .addComponent(cloneThree))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(weekFour)
+                                        .addComponent(cloneFour))
+                                .addGap(18, 18, 18)
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(moveUp)
+                                        .addComponent(moveDown))
+                                .addGap(18, 18, 18)
+                                .addGroup(weeksPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(clearCurrent)
+                                        .addComponent(clearAll))
+                                .addContainerGap(18, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout BigPaneLayout = new javax.swing.GroupLayout(this);
         this.setLayout(BigPaneLayout);
@@ -270,125 +444,21 @@ public class MultiSelectWindow extends JPanel {
                         .addGroup(BigPaneLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(weeksPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(BigPaneLayout.createSequentialGroup()
-                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(lernenButton)
-                                                        .addComponent(freiButton)
-                                                        .addComponent(gitarreButton)
-                                                        .addComponent(arbeitButton))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(otherButton)
-                                                        .addComponent(uniButton)
-                                                        .addComponent(essenButton)
-                                                        .addComponent(sportButton))
-                                                .addGap(0, 0, Short.MAX_VALUE))
-                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(otherNameButton)
-                                                        .addComponent(colorButton))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(otherTextField)
-                                                        .addComponent(colourSelecter, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addContainerGap())
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BigPaneLayout.createSequentialGroup()
-                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                .addComponent(weekThree, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(cloneThree))
-                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                .addComponent(clearCurrent)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(clearAll))
-                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(weekOne, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                                                                        .addComponent(weekTwo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                .addGap(18, 18, Short.MAX_VALUE)
-                                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(cloneOne, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
-                                                                        .addComponent(cloneTwo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BigPaneLayout.createSequentialGroup()
-                                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                                .addComponent(moveUp, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                                .addComponent(weekFour, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                                                                .addGap(10, 10, 10)))
-                                                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                                                .addGap(5, 5, 5)
-                                                                                .addComponent(moveDown))
-                                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BigPaneLayout.createSequentialGroup()
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(cloneFour, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                                .addContainerGap())
-                                        .addGroup(BigPaneLayout.createSequentialGroup()
-                                                .addComponent(cancelButton)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-
+                                                .addComponent(cellEditPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addContainerGap())))
         );
         BigPaneLayout.setVerticalGroup(
                 BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(BigPaneLayout.createSequentialGroup()
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, BigPaneLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(uniButton)
-                                        .addComponent(freiButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(lernenButton)
-                                        .addComponent(sportButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(gitarreButton)
-                                        .addComponent(essenButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(arbeitButton)
-                                        .addComponent(otherButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(otherNameButton)
-                                        .addComponent(otherTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(colorButton)
-                                        .addComponent(colourSelecter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(weekOne)
-                                        .addComponent(cloneOne))
-                                .addGap(18, 18, 18)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(weekTwo)
-                                        .addComponent(cloneTwo))
-                                .addGap(18, 18, 18)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(weekThree)
-                                        .addComponent(cloneThree))
-                                .addGap(18, 18, 18)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(weekFour)
-                                        .addComponent(cloneFour))
-                                .addGap(18, 18, 18)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(moveUp)
-                                        .addComponent(moveDown))
-                                .addGap(53, 53, 53)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(clearCurrent)
-                                        .addComponent(clearAll))
-                                .addGap(40, 40, 40)
-                                .addGroup(BigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-
-                                        .addComponent(cancelButton))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(cellEditPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(25, 25, 25)
+                                .addComponent(weeksPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(443, Short.MAX_VALUE))
         );
+
     }
 
     public static void main(String[] args){

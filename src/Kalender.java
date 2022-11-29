@@ -8,14 +8,15 @@ public class Kalender extends JFrame {
 
 
     private JButton[][] kalender = new JButton[61][7]; //15*4+1
-    private JButton select, change, hours, quadHours, clear;
+    private JButton select, mark, hours, quadHours, clear;
     private final JLabel[] labels = new JLabel[68];// 7+ (4*15+1)
     private final JLabel[] blanks = new JLabel[20];
     private JPanel center;
     private final Kalender thisObjekt = this;
 
     private boolean hoursMode = true;
-    private boolean selectMode = false;
+    private boolean menuMode = false;
+    private boolean markMode = false;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
     private final String saveFile ="Resources\\KalenderWerte";
@@ -55,7 +56,7 @@ public class Kalender extends JFrame {
         JPanel top = new JPanel();
             top.setLayout(new GridLayout(1,5));
             top.add(select);
-            top.add(change);
+            top.add(mark);
             top.add(clear);
             top.add(hours);
             top.add(quadHours);
@@ -109,9 +110,9 @@ public class Kalender extends JFrame {
         select = new JButton("Menu");
         select.addActionListener(new MenuListener());
         select.setBackground(Colors.lightGray);
-        change = new JButton("Change Selected");
-        change.addActionListener(new ChangeListener());
-        change.setBackground(Colors.lightGray);
+        mark = new JButton("Mark");
+        mark.addActionListener(new MarkListener());
+        mark.setBackground(Colors.lightGray);
         clear = new JButton("Clear");
         clear.addActionListener(new ClearListener());
         clear.setBackground(Colors.red);
@@ -202,32 +203,19 @@ public class Kalender extends JFrame {
         }
     }
 
-    public void resetMarkMode(){
+    public void resetMarkMode(boolean fullReset){
         for (int i = 0; i< kalender.length; i++){
             for (int j = 0; j< kalender[0].length; j++){
-                if(kalender[i][j].getBackground().equals(Colors.darkerLightGray)) kalender[i][j].setBackground(Colors.lightGray);
-                if(kalender[i][j].getBackground().equals(Colors.darkerBlue)) kalender[i][j].setBackground(Colors.blue);
-                if(kalender[i][j].getBackground().equals(Colors.darkerOrange)) kalender[i][j].setBackground(Colors.orange);
-                if(kalender[i][j].getBackground().equals(Colors.darkerLightGreen)) kalender[i][j].setBackground(Colors.lightGreen);
-                if(kalender[i][j].getBackground().equals(Colors.darkerPurple)) kalender[i][j].setBackground(Colors.purple);
-                if(kalender[i][j].getBackground().equals(Colors.darkerRed)) kalender[i][j].setBackground(Colors.red);
-                if(kalender[i][j].getBackground().equals(Colors.darkerCyan)) kalender[i][j].setBackground(Colors.cyan);
-                if(kalender[i][j].getBackground().equals(Colors.darkerYellow)) kalender[i][j].setBackground(Colors.yellow);
-                if(kalender[i][j].getBackground().equals(Colors.darkerPink)) kalender[i][j].setBackground(Colors.pink);
-                if(kalender[i][j].getBackground().equals(Colors.darkerSkintone)) kalender[i][j].setBackground(Colors.skintone);
-                if(kalender[i][j].getBackground().equals(Colors.darkerSandy)) kalender[i][j].setBackground(Colors.sandy);
+                kalender[i][j] =MarkHelper.makeNotSelected(kalender[i][j]);
                 for( ActionListener al : kalender[i][j].getActionListeners() ) {
                     kalender[i][j].removeActionListener( al );
                 }
-                kalender[i][j].addActionListener(new ButtonListener());
+                if(fullReset) {
+                    kalender[i][j].addActionListener(new ButtonListener());
+                }
             }
         }
     }
-
-
-//    public void changeButtonLaybleInHoursMode(JButton button){
-//
-//    }
     private class HoursListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -257,54 +245,72 @@ public class Kalender extends JFrame {
     private class MenuListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(!selectMode) {
-                selectMode = true;
-                for (int i = 0; i< kalender.length; i++){
-                    for (int j = 0; j< kalender[0].length; j++) {
-                        for( ActionListener al : kalender[i][j].getActionListeners() ) {
-                            kalender[i][j].removeActionListener( al );
-                        }
-                    kalender[i][j].addActionListener(new MarkListener());
-                    }
-                }
+            if(!menuMode) {
+                menuMode = true;
                 changeSelect = new MultiSelectWindow(thisObjekt);
                 addSelectPane(changeSelect);
+                ((JButton)e.getSource()).setBackground(Colors.lightGreen);
 
             }else{
+                ((JButton)e.getSource()).setBackground(Colors.lightGray);
                 changeSelect.close();
             }
         }
     }
-
-    public class MarkListener implements ActionListener {
+    public class MarkedButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(selectMode) {
-                JButton button = (JButton) e.getSource();
-                        if(button.getBackground().equals(Colors.lightGray)) button.setBackground(Colors.darkerLightGray);
-                        if(button.getBackground().equals(Colors.blue)) button.setBackground(Colors.darkerBlue);
-                        if(button.getBackground().equals(Colors.orange)) button.setBackground(Colors.darkerOrange);
-                        if(button.getBackground().equals(Colors.lightGreen)) button.setBackground(Colors.darkerLightGreen);
-                        if(button.getBackground().equals(Colors.purple)) button.setBackground(Colors.darkerPurple);
-                        if(button.getBackground().equals(Colors.red)) button.setBackground(Colors.darkerRed);
-                        if(button.getBackground().equals(Colors.cyan)) button.setBackground(Colors.darkerCyan);
-                        if(button.getBackground().equals(Colors.yellow)) button.setBackground(Colors.darkerYellow);
-                        if(button.getBackground().equals(Colors.pink)) button.setBackground(Colors.darkerPink);
-                        if(button.getBackground().equals(Colors.skintone)) button.setBackground(Colors.darkerSkintone);
-                        if(button.getBackground().equals(Colors.sandy)) button.setBackground(Colors.darkerSandy);
+            for (int i = 0; i < kalender.length; i++) {
+                for (int j = 0; j < kalender[0].length; j++) {
+                    if (((JButton) e.getSource()).equals(kalender[i][j])){
+                        if (hoursMode) {
+                            for (int k = 0; k < 4; k++) {
+                                if (MarkHelper.isSelected(kalender[i + k][j])) {
+                                    kalender[i + k][j] = MarkHelper.makeNotSelected(kalender[i + k][j]);
+                                    changeSelect.removeFromList(kalender[i + k][j]);
+                                } else {
+                                    kalender[i + k][j] = MarkHelper.makeSelected(kalender[i + k][j]);
+                                    changeSelect.addToList(kalender[i + k][j]);
+                                }
+                            }
+                        } else {
+                            JButton button = (JButton) e.getSource();
+                            if (MarkHelper.isSelected(button)) {
+                                button = MarkHelper.makeNotSelected(button);
+                                changeSelect.removeFromList(button);
+                            } else {
+                                button = MarkHelper.makeSelected(button);
+                                changeSelect.addToList(button);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    private class ChangeListener implements ActionListener {
+    private class MarkListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if(selectMode){
-                //TODO: change all buttons
+            if(!markMode) {
+                markMode = true;
+                for (int i = 0; i< kalender.length; i++) {
+                    for (int j = 0; j < kalender[0].length; j++) {
+                        for( ActionListener al : kalender[i][j].getActionListeners() ) {
+                            kalender[i][j].removeActionListener( al );
+                        }
+                        kalender[i][j].addActionListener(new MarkedButtonListener());
+                    }
+                }
+                ((JButton)e.getSource()).setBackground(Colors.lightGreen);
+            }else{
+                ((JButton)e.getSource()).setBackground(Colors.lightGray);
+                markMode = false;
+                ((JButton)e.getSource()).setBackground(Colors.lightGray);
+                resetMarkMode(false);
             }
         }
     }
-
 
 
     private class ClearListener implements ActionListener {
@@ -330,7 +336,7 @@ public class Kalender extends JFrame {
     }
 
     public void print(){
-        resetMarkMode();
+        resetMarkMode(true);
         Printer.writeCSV(csvFile, kalender);
         Printer.write(saveFile, kalender);
     }
@@ -339,34 +345,13 @@ public class Kalender extends JFrame {
         return Printer.read(saveFile, kalender);
     }
 
-//    public JButton getPriority(JButton[] buttons){
-//        for(int i = 0; i< buttons.length; i++) {
-//            if (buttons[i].getBackground().equals(third)
-//                &&!buttons[(i+1)%4].getBackground().equals(third)
-//                &&!buttons[(i+2)%4].getBackground().equals(third)
-//                &&!buttons[(i+3)%4].getBackground().equals(third)) {
-//                return buttons[i];
-//            }
-//        }
-//        for(int i = 0; i< buttons.length; i++) {
-//            if (buttons[i].getBackground().equals(second)
-//                    &&!buttons[(i+1)%4].getBackground().equals(second)
-//                    &&!buttons[(i+2)%4].getBackground().equals(second)
-//                    &&!buttons[(i+3)%4].getBackground().equals(second)) {
-//                return buttons[i];
-//            }
-//        }
-//        return buttons[0];
-//    }
-
-
     public static void main(String[] args){
         JFrame frame = new Kalender();
         frame.setVisible(true);
     }
 
     public void setSelectMode(boolean selectMode) {
-        this.selectMode = selectMode;
+        this.menuMode = selectMode;
     }
 
     public JButton[][] getKalender() {
@@ -385,13 +370,6 @@ public class Kalender extends JFrame {
         this.select = select;
     }
 
-    public JButton getChange() {
-        return change;
-    }
-
-    public void setChange(JButton change) {
-        this.change = change;
-    }
 
     public JButton getHours() {
         return hours;
@@ -446,7 +424,7 @@ public class Kalender extends JFrame {
     }
 
     public boolean isSelectMode() {
-        return selectMode;
+        return menuMode;
     }
 
     public Border getBlackline() {
