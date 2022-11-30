@@ -33,8 +33,8 @@ public class Colors {
     public static Color stringToColor(String color){
         color = color.toLowerCase();
         switch (color){
-            case "lightGreen": return lightGreen;
-            case "lightGray": return lightGray;
+            case "light green": return lightGreen;
+            case "light gray": return lightGray;
             case "blue": return blue;
             case "orange": return orange;
             case "purple": return purple;

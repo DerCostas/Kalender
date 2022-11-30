@@ -175,6 +175,8 @@ public class Kalender extends JFrame {
                 }
             }
         }
+        mark.setBackground(Colors.lightGray);
+        resetMarkMode(true);
         refresh();
     }
     private class ButtonListener implements ActionListener{
@@ -215,6 +217,7 @@ public class Kalender extends JFrame {
                 }
             }
         }
+        markMode = false;
     }
     private class HoursListener implements ActionListener {
         @Override
@@ -304,10 +307,9 @@ public class Kalender extends JFrame {
                 }
                 ((JButton)e.getSource()).setBackground(Colors.lightGreen);
             }else{
-                ((JButton)e.getSource()).setBackground(Colors.lightGray);
                 markMode = false;
                 ((JButton)e.getSource()).setBackground(Colors.lightGray);
-                resetMarkMode(false);
+                resetMarkMode(true);
             }
         }
     }
