@@ -113,7 +113,7 @@ public class ButtonSelection extends JDialog {
         jRadioButton5.setText("Gitarre");
         jRadioButton6.setText("Essen");
         jRadioButton7.setText("Arbeit");
-        jRadioButton8.setText("Other");
+        jRadioButton8.setText("Unsure");
         jRadioButton9.setText("Other");
         jRadioButton10.setText("Color");
         jTextField1.setText("");

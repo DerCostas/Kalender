@@ -1,9 +1,15 @@
 import javax.swing.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MarkHelper {
 
     private static int startI, startJ, endI, endY;
     private static boolean startSettet;
+
+    private static List<JButton> selectList = new LinkedList<JButton>();
+
+    private static Kalender parent;
 
     public static boolean isSelected(JButton button) {
         if (button.getBackground().equals(Colors.darkerLightGray)) return true;
@@ -43,6 +49,7 @@ public class MarkHelper {
     }
 
     public static JButton makeSelected(JButton button){
+
         if(button.getBackground().equals(Colors.lightGray)) button.setBackground(Colors.darkerLightGray);
         if(button.getBackground().equals(Colors.blue)) button.setBackground(Colors.darkerBlue);
         if(button.getBackground().equals(Colors.orange)) button.setBackground(Colors.darkerOrange);
@@ -55,6 +62,47 @@ public class MarkHelper {
         if(button.getBackground().equals(Colors.skintone)) button.setBackground(Colors.darkerSkintone);
         if(button.getBackground().equals(Colors.sandy)) button.setBackground(Colors.darkerSandy);
         return button;
+    }
+
+    public static JButton[][] makeShiftSelected(JButton button, JButton[][] array){
+        if(!startSettet) {
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array[0].length; j++) {
+                    if (button.equals(array[i][j])) {
+                        startI = i;
+                        startJ = j;
+                        array[i][j] = makeSelected(button);
+                    }
+                }
+            }
+            startSettet =  true;
+            return array;
+        }else{
+
+
+
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array[0].length; j++) {
+                    for(int k = 0; k < selectList.size(); k++){
+                        if(array[i][j].equals(selectList.get(k))){
+                            array[i][j] = makeNotSelected(array[i][j]);
+                        }
+                    }
+                    if (button.equals(array[i][j])) {
+                        endI = i;
+                        endY = j;
+                    }
+                }
+            }
+
+            for (int i = startI; i<= endI; i++ ){
+                for (int j = startJ; j<= endY; j++){
+                    array[i][j] = makeSelected(array[i][j]);
+                    selectList.add(array[i][j]);
+                }
+            }
+            return array;
+        }
     }
 
     public void setStart(int i, int j){
@@ -83,5 +131,13 @@ public class MarkHelper {
 
     public static void setStartSettet(boolean startSettet) {
         MarkHelper.startSettet = startSettet;
+    }
+
+    public static Kalender getParent() {
+        return parent;
+    }
+
+    public static void setParent(Kalender parent) {
+        MarkHelper.parent = parent;
     }
 }

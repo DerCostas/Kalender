@@ -44,7 +44,13 @@ public class Printer {
         for(int i = 0; i< buttons.length; i++){
             array[i/7][i%7].setText(buttons[i].split("\\$")[0]);
             array[i/7][i%7].setBackground(new Color(Integer.parseInt(buttons[i].split("\\$")[1].split("@")[0]),Integer.parseInt(buttons[i].split("\\$")[1].split("@")[1]), Integer.parseInt(buttons[i].split("\\$")[1].split("@")[2] )));
+
         }
+//        for(int i = 0; i< array.length; i++){
+//            for (int j = 0; j< array[0].length; j++){
+//                array[i][j].setText("i:"+i+" j:"+j);
+//            }
+//        }
         return array;
     }
 

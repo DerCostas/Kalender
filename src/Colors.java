@@ -8,23 +8,23 @@ public class Colors {
     public static Color blue = new Color(50,130,246);
     public static Color orange = new Color(247,159,20);
     public static Color purple = new Color(205,123,245);
-    public static Color red = new Color(255,88,88);
+    public static Color red = new Color(234,121,121);
     public static Color cyan = new Color(28,245,210);
     public static Color yellow = new Color(238,245,30);
-    public static Color pink = new Color(242,70,206);
+    public static Color pink = new Color(234,111,194);
     public static Color skintone = new Color(255,195,200);
     public static Color sandy = new Color(209,188,138);
     public static Color darkerLightGreen = Color.green.darker();
-    public static Color darkerLightGray = new Color(192,192,192).darker();
-    public static Color darkerBlue = new Color(50,130,246).darker();
-    public static Color darkerOrange = new Color(247,159,20).darker();
-    public static Color darkerPurple = new Color(205,123,245).darker();
-    public static Color darkerRed = new Color(255,88,88).darker();
-    public static Color darkerCyan = new Color(28,245,210).darker();
-    public static Color darkerYellow = new Color(238,245,30).darker();
-    public static Color darkerPink = new Color(242,70,206).darker();
-    public static Color darkerSkintone = new Color(255,195,200).darker();
-    public static Color darkerSandy = new Color(209,188,138).darker();
+    public static Color darkerLightGray = lightGray.darker();
+    public static Color darkerBlue = blue.darker();
+    public static Color darkerOrange = orange.darker();
+    public static Color darkerPurple = purple.darker();
+    public static Color darkerRed = red.darker();
+    public static Color darkerCyan = cyan.darker();
+    public static Color darkerYellow = yellow.darker();
+    public static Color darkerPink = pink.darker();
+    public static Color darkerSkintone = skintone.darker();
+    public static Color darkerSandy = sandy.darker();
 
     Colors(){
 
@@ -70,10 +70,10 @@ public class Colors {
                     button.setBackground(cyan);
                     break;
                 case "Arbeit":
-                    button.setBackground(yellow);
+                    button.setBackground(red);
                     break;
-                case "Other":
-                    button.setBackground(pink);
+                case "Unsure":
+                    button.setBackground(yellow);
                     break;
             }
         return button;

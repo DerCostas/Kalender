@@ -137,7 +137,7 @@ public class MultiSelectWindow extends JPanel {
         gitarreButton.setText("Gitarre");
         essenButton.setText("Essen");
         arbeitButton.setText("Arbeit");
-        otherButton.setText("Other");
+        otherButton.setText("Unsure");
         otherNameButton.setText("Other");
         colorButton.setText("Color");
         otherTextField.setText("");
@@ -215,7 +215,6 @@ public class MultiSelectWindow extends JPanel {
             }
             if(colorButton.isSelected()){
                 temp.setBackground(Colors.stringToColor(colourSelecter.getItemAt(colourSelecter.getSelectedIndex())));
-                System.out.println("test");
             }else{
                 if(currentlySelected != null) {
                     temp.setBackground(currentlySelected.getBackground());
@@ -226,7 +225,6 @@ public class MultiSelectWindow extends JPanel {
                 selected.get(i).setBackground(temp.getBackground());
             }
             selected = new LinkedList<JButton>();
-            currentlySelected = null;
         }
     }
 
@@ -466,12 +464,6 @@ public class MultiSelectWindow extends JPanel {
                                 .addComponent(weeksPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(52, Short.MAX_VALUE))
         );
-
-
-
-
-
-
     }
 
     public static void main(String[] args){

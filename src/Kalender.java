@@ -8,7 +8,7 @@ public class Kalender extends JFrame {
 
 
     private JButton[][] kalender = new JButton[61][7]; //15*4+1
-    private JButton select, mark, hours, quadHours, clear;
+    private JButton select, mark, hours, quadHours;
     private final JLabel[] labels = new JLabel[68];// 7+ (4*15+1)
     private final JLabel[] blanks = new JLabel[20];
     private JPanel center;
@@ -23,6 +23,8 @@ public class Kalender extends JFrame {
     private final String weekTwoSaveFile ="Resources\\WeekTwoSaveFile";
     private final String weekThreeSaveFile ="Resources\\WeekThreeSaveFile";
     private final String weekFourSaveFile ="Resources\\WeekFourSaveFile";
+    private final String currentlyDisplayedFile = weekOneSaveFile;
+
 
 
 
@@ -35,6 +37,8 @@ public class Kalender extends JFrame {
         }
         IsKeyPressed.prepare();
         changeSelect = new MultiSelectWindow(thisObjekt);
+        MarkHelper.setParent(this);
+
         buildPanel();
         buildKalender();
         buildButtons();
@@ -63,7 +67,7 @@ public class Kalender extends JFrame {
             top.setLayout(new GridLayout(1,5));
             top.add(select);
             top.add(mark);
-            top.add(clear);
+            top.add(blanks[1]);
             top.add(hours);
             top.add(quadHours);
             kalenderPanel.add(center, BorderLayout.CENTER);
@@ -119,9 +123,6 @@ public class Kalender extends JFrame {
         mark = new JButton("Mark");
         mark.addActionListener(new MarkListener());
         mark.setBackground(Colors.lightGray);
-        clear = new JButton("Clear");
-        clear.addActionListener(new ClearListener());
-        clear.setBackground(Colors.red);
         hours = new JButton("Hours Only");
         hours.addActionListener(new HoursListener());
         quadHours = new JButton("Quatter Hours");
@@ -210,7 +211,7 @@ public class Kalender extends JFrame {
                 i += 3;
             }
 
-            print();
+
         }else{
             kalender=read();
             center.setLayout(new GridLayout(62, 8));
@@ -251,8 +252,8 @@ public class Kalender extends JFrame {
                         kalender[i][j].setBackground(returnValue.getBackground());
                         if(hoursMode){
                             for(int k = 1; k<4; k++){
-                                kalender[i+k][j].setText(returnValue.getText());
-                                kalender[i+k][j].setBackground(returnValue.getBackground());
+                                kalender[((i%4)*4)+k][j].setText(returnValue.getText());
+                                kalender[((i%4)*4)+k][j].setBackground(returnValue.getBackground());
                             }
                         }
 
@@ -260,7 +261,7 @@ public class Kalender extends JFrame {
                     }
                 }
             }
-            print();
+
         }
     }
 
@@ -322,30 +323,42 @@ public class Kalender extends JFrame {
     public class MarkedButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println(IsKeyPressed.isShiftPressed());
             for (int i = 0; i < kalender.length; i++) {
                 for (int j = 0; j < kalender[0].length; j++) {
-                    if (((JButton) e.getSource()).equals(kalender[i][j])){
-                        if (hoursMode) {
-                            for (int k = 0; k < 4; k++) {
-                                if (MarkHelper.isSelected(kalender[i + k][j])) {
-                                    kalender[i + k][j] = MarkHelper.makeNotSelected(kalender[i + k][j]);
-                                    changeSelect.removeFromList(kalender[i + k][j]);
-                                } else {
-                                    kalender[i + k][j] = MarkHelper.makeSelected(kalender[i + k][j]);
-                                    changeSelect.addToList(kalender[i + k][j]);
+                    if (((JButton) e.getSource()).equals(kalender[(i%4)*4][j])){
+                        i= (i%4)*4;
+                        if(IsKeyPressed.isShiftPressed()){
+                            kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender);
+                            for (int k = 0; k < kalender.length; k++) {
+                                for (int h = 0; h< kalender[0].length; h++) {
+                                    if(MarkHelper.isSelected(kalender[k][h])){
+                                        changeSelect.addToList(kalender[k][h]);
+                                    }
                                 }
                             }
-                        } else {
-                            JButton button = (JButton) e.getSource();
-                            if (MarkHelper.isSelected(button)) {
-                                button = MarkHelper.makeNotSelected(button);
-                                changeSelect.removeFromList(button);
+                        }else {
+                            if (hoursMode) {
+                                for (int k = 0; k < 4; k++) {
+                                    if (MarkHelper.isSelected(kalender[i + k][j])) {
+                                        kalender[i + k][j] = MarkHelper.makeNotSelected(kalender[i + k][j]);
+                                        changeSelect.removeFromList(kalender[i + k][j]);
+                                    } else {
+                                        kalender[i + k][j] = MarkHelper.makeSelected(kalender[i + k][j]);
+                                        changeSelect.addToList(kalender[i + k][j]);
+                                    }
+                                }
                             } else {
-                                button = MarkHelper.makeSelected(button);
-                                changeSelect.addToList(button);
+                                JButton button = (JButton) e.getSource();
+                                if (MarkHelper.isSelected(button)) {
+                                    button = MarkHelper.makeNotSelected(button);
+                                    changeSelect.removeFromList(button);
+                                } else {
+                                    button = MarkHelper.makeSelected(button);
+                                    changeSelect.addToList(button);
+                                }
                             }
                         }
+                        return;
                     }
                 }
             }
@@ -367,6 +380,7 @@ public class Kalender extends JFrame {
                 }
                 ((JButton)e.getSource()).setBackground(Colors.lightGreen);
             }else{
+                MarkHelper.setStartSettet(false);
                 markMode = false;
                 ((JButton)e.getSource()).setBackground(Colors.lightGray);
                 resetMarkMode(true);
@@ -400,11 +414,11 @@ public class Kalender extends JFrame {
     public void print(){
         resetMarkMode(true);
         Printer.writeCSV(csvFile, kalender);
-        Printer.write(weekOneSaveFile, kalender);
+        Printer.write(currentlyDisplayedFile, kalender);
     }
 
     public JButton[][] read(){
-        return Printer.read(weekOneSaveFile, kalender);
+        return Printer.read(currentlyDisplayedFile, kalender);
     }
 
     public static void main(String[] args){
@@ -449,13 +463,7 @@ public class Kalender extends JFrame {
         this.quadHours = quadHours;
     }
 
-    public JButton getClear() {
-        return clear;
-    }
 
-    public void setClear(JButton clear) {
-        this.clear = clear;
-    }
 
     public JLabel[] getLabels() {
         return labels;
