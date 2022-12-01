@@ -19,7 +19,13 @@ public class Kalender extends JFrame {
     private boolean markMode = false;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
-    private final String saveFile ="Resources\\KalenderWerte";
+    private final String weekOneSaveFile ="Resources\\WeekOneSaveFile";
+    private final String weekTwoSaveFile ="Resources\\WeekTwoSaveFile";
+    private final String weekThreeSaveFile ="Resources\\WeekThreeSaveFile";
+    private final String weekFourSaveFile ="Resources\\WeekFourSaveFile";
+
+
+
     private final String csvFile ="Resources\\Kalender.csv";
 
     MultiSelectWindow changeSelect;
@@ -27,8 +33,8 @@ public class Kalender extends JFrame {
         for (int i = 0; i< blanks.length; i++){
             blanks[i] = new JLabel();
         }
-
-
+        IsKeyPressed.prepare();
+        changeSelect = new MultiSelectWindow(thisObjekt);
         buildPanel();
         buildKalender();
         buildButtons();
@@ -129,6 +135,51 @@ public class Kalender extends JFrame {
             hours.setBackground(Colors.lightGray);
         }
     }
+
+    public JButton hourModePriorityButton(JButton[] buttons){
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Arbeit")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Uni")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Lernen")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Sport")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Gitarre")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Essen")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText().equals("Other")){
+                return buttons[i];
+            }
+        }
+        for(int i = 0; i< buttons.length; i++){
+            if(buttons[i].getText() == "Frei"){
+                return buttons[i];
+            }
+        }
+        return buttons[0];
+    }
+
     public void changeMode(){
         center.removeAll();
         if(hoursMode) {
@@ -146,15 +197,20 @@ public class Kalender extends JFrame {
                     } else if (j == 0) {
                         center.add(labels[i + 3]);
                     } else {
-                        center.add(kalender[i-4][j-1]);
+                        if (i < 61) {
+                            center.add(hourModePriorityButton(new JButton[]{kalender[i - 4][j - 1], kalender[i - 3][j - 1], kalender[i - 2][j - 1], kalender[i - 1][j - 1]}));
+
+                        }else{
+                            center.add(kalender[i - 4][j - 1]);
+
+                        }
                     }
 
                 }
                 i += 3;
             }
 
-            Printer.write(saveFile, kalender);
-            Printer.writeCSV(csvFile, kalender);
+            print();
         }else{
             kalender=read();
             center.setLayout(new GridLayout(62, 8));
@@ -179,6 +235,9 @@ public class Kalender extends JFrame {
         resetMarkMode(true);
         refresh();
     }
+
+
+
     private class ButtonListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -241,16 +300,16 @@ public class Kalender extends JFrame {
         }
     }
 
-    public void addSelectPane(JPanel panel){
+    public void addSelectPane(MultiSelectWindow panel){
         getContentPane().add(panel, BorderLayout.LINE_START);
-        panel.setVisible(true);
+        panel.open();
     }
     private class MenuListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(!menuMode) {
                 menuMode = true;
-                changeSelect = new MultiSelectWindow(thisObjekt);
+
                 addSelectPane(changeSelect);
                 ((JButton)e.getSource()).setBackground(Colors.lightGreen);
 
@@ -263,6 +322,7 @@ public class Kalender extends JFrame {
     public class MarkedButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            System.out.println(IsKeyPressed.isShiftPressed());
             for (int i = 0; i < kalender.length; i++) {
                 for (int j = 0; j < kalender[0].length; j++) {
                     if (((JButton) e.getSource()).equals(kalender[i][j])){
@@ -340,11 +400,11 @@ public class Kalender extends JFrame {
     public void print(){
         resetMarkMode(true);
         Printer.writeCSV(csvFile, kalender);
-        Printer.write(saveFile, kalender);
+        Printer.write(weekOneSaveFile, kalender);
     }
 
     public JButton[][] read(){
-        return Printer.read(saveFile, kalender);
+        return Printer.read(weekOneSaveFile, kalender);
     }
 
     public static void main(String[] args){
@@ -431,10 +491,6 @@ public class Kalender extends JFrame {
 
     public Border getBlackline() {
         return blackline;
-    }
-
-    public String getSaveFile() {
-        return saveFile;
     }
 
     public String getCsvFile() {

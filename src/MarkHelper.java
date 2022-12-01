@@ -2,7 +2,8 @@ import javax.swing.*;
 
 public class MarkHelper {
 
-
+    private static int startI, startJ, endI, endY;
+    private static boolean startSettet;
 
     public static boolean isSelected(JButton button) {
         if (button.getBackground().equals(Colors.darkerLightGray)) return true;
@@ -54,5 +55,33 @@ public class MarkHelper {
         if(button.getBackground().equals(Colors.skintone)) button.setBackground(Colors.darkerSkintone);
         if(button.getBackground().equals(Colors.sandy)) button.setBackground(Colors.darkerSandy);
         return button;
+    }
+
+    public void setStart(int i, int j){
+        startI = i;
+        startJ = j;
+    }
+
+    //TODO: nicht einen punkt fixieren und dann immer 2. verändern, sonder immer den näheren verändern
+    public JButton[][] getMarkedButons(int i, int j, JButton[][] array){
+        JButton[][] temp = new JButton[i-startI][j-startJ];
+        int iCounter = 0;
+        int jCounter = 0;
+        for (int k = startI; k<= i; k++ ){
+            for (int h = startJ; h<= j; h++){
+                temp[iCounter][jCounter] = array[k][h];
+                jCounter++;
+            }
+            iCounter++;
+        }
+        return temp;
+    }
+
+    public static boolean isStartSettet() {
+        return startSettet;
+    }
+
+    public static void setStartSettet(boolean startSettet) {
+        MarkHelper.startSettet = startSettet;
     }
 }
