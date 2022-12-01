@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MarkHelper {
 
-    private static int startI, startJ, endI, endY;
+    private static int smallI, bigI, smallJ, bigJ;
     private static boolean startSettet;
 
     private static List<JButton> selectList = new LinkedList<JButton>();
@@ -69,8 +69,8 @@ public class MarkHelper {
             for (int i = 0; i < array.length; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                     if (button.equals(array[i][j])) {
-                        startI = i;
-                        startJ = j;
+                        smallI = i;
+                        smallJ = j;
                         array[i][j] = makeSelected(button);
                     }
                 }
@@ -85,23 +85,23 @@ public class MarkHelper {
                             array[i][j] = makeNotSelected(array[i][j]);
                         }
                     }
-                    if (button.equals(array[i][j])) {
-                        endI = i;
-                        endY = j;
-                        if(parent.isHoursMode()) {
-                            if (startI < endI) {
-                                startI = startI + 3;
-                            } else {
-                                endI = endI + 3;
-                            }
-                        }
-
-                    }
+//                    if (button.equals(array[i][j])) {
+//                        endI = i;
+//                        endY = j;
+//                        if(parent.isHoursMode()) {
+//                            if (startI < endI) {
+//                                startI = startI + 3;
+//                            } else {
+//                                endI = endI + 3;
+//                            }
+//                        }
+//
+//                    }
                 }
             }
 
-            for (int i = startI; i<= endI; i++ ){
-                for (int j = startJ; j<= endY; j++){
+            for (int i = smallI; i<= bigI; i++ ){
+                for (int j = smallJ; j<= bigJ; j++){
                     array[i][j] = makeSelected(array[i][j]);
                     selectList.add(array[i][j]);
                 }
