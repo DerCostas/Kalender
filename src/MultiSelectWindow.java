@@ -220,11 +220,17 @@ public class MultiSelectWindow extends JPanel {
                     temp.setBackground(currentlySelected.getBackground());
                 }
             }
-            for(int i = 0; i< selected.size(); i++){
-                selected.get(i).setText(temp.getText());
-                selected.get(i).setBackground(temp.getBackground());
+            JButton[][] array = parent.getKalender();
+            for(int i = 0; i< array.length; i++){
+                for(int j = 0; j<array[0].length; j++){
+                    if(MarkHelper.isSelected(array[i][j])){
+                        array[i][j].setText(temp.getText());
+                        array[i][j].setBackground(temp.getBackground());
+                    }
+                }
+
             }
-            selected = new LinkedList<JButton>();
+            parent.setKalender(array);
             MarkHelper.setStartSettet(false);
         }
     }

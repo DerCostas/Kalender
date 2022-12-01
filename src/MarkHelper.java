@@ -84,11 +84,6 @@ public class MarkHelper {
         }else{
             for (int i = 0; i < array.length; i++) {
                 for (int j = 0; j < array[0].length; j++) {
-                    for(int k = 0; k < selectList.size(); k++){
-                        if(array[i][j].equals(selectList.get(k))){
-                            array[i][j] = makeNotSelected(array[i][j]);
-                        }
-                    }
                     if (button.equals(array[i][j])) {
                         endI = i;
                         endJ = j;
@@ -107,12 +102,19 @@ public class MarkHelper {
                 }
             }
 
+            if(endI>=array.length){
+                endI = array.length-1;
+            }
+            if(endJ >= array[0].length){
+                endJ = array.length-1;
+            }
             for (int i = startI; i<= endI; i++ ){
                 for (int j = startJ; j<= endJ; j++){
                     array[i][j] = makeSelected(array[i][j]);
                     selectList.add(array[i][j]);
                 }
             }
+            startSettet = false;
             return array;
         }
     }

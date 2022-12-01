@@ -16,7 +16,7 @@ public class Kalender extends JFrame {
 
     private boolean hoursMode = true;
     private boolean menuMode = false;
-    private boolean markMode = false;
+    private boolean markMode = true;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
     private final String weekOneSaveFile ="Resources\\WeekOneSaveFile";
@@ -84,7 +84,12 @@ public class Kalender extends JFrame {
                 kalender[i][j].setBackground(Color.green);
                 kalender[i][j].setText("Frei");
                 kalender[i][j].setFont(new Font("Verdana", Font.BOLD, 14));
-                kalender[i][j].addActionListener(new ButtonListener());
+                if(markMode){
+                    kalender[i][j].addActionListener(new MarkedButtonListener());
+                }else{
+                    kalender[i][j].addActionListener(new ButtonListener());
+                }
+
             }
         }
 
@@ -122,7 +127,6 @@ public class Kalender extends JFrame {
         select.setBackground(Colors.lightGray);
         mark = new JButton("Mark");
         mark.addActionListener(new MarkListener());
-        mark.setBackground(Colors.lightGray);
         hours = new JButton("Hours Only");
         hours.addActionListener(new HoursListener());
         quadHours = new JButton("Quatter Hours");
@@ -135,6 +139,12 @@ public class Kalender extends JFrame {
             quadHours.setBackground(Colors.lightGreen);
             hours.setBackground(Colors.lightGray);
         }
+        if(markMode){
+            mark.setBackground(Colors.lightGreen);
+        }else{
+            mark.setBackground(Colors.lightGray);
+        }
+
     }
 
     public JButton hourModePriorityButton(JButton[] buttons){
@@ -232,8 +242,12 @@ public class Kalender extends JFrame {
                 }
             }
         }
-        mark.setBackground(Colors.lightGray);
-        resetMarkMode(true);
+        if(markMode){
+            mark.setBackground(Colors.lightGreen);
+        }else{
+            mark.setBackground(Colors.lightGray);
+        }
+        resetMarkMode(false);
         refresh();
     }
 
@@ -296,12 +310,13 @@ public class Kalender extends JFrame {
                 if(fullReset) {
                     for( ActionListener al : kalender[i][j].getActionListeners() ) {
                         kalender[i][j].removeActionListener( al );
+                        markMode = false;
                     }
                     kalender[i][j].addActionListener(new ButtonListener());
                 }
             }
         }
-        markMode = false;
+
     }
     private class HoursListener implements ActionListener {
         @Override
@@ -349,9 +364,12 @@ public class Kalender extends JFrame {
         public void actionPerformed(ActionEvent e) {
             for (int i = 0; i < kalender.length; i++) {
                 for (int j = 0; j < kalender[0].length; j++) {
-                    if (((JButton) e.getSource()).equals(kalender[(i%4)*4][j])){
-                        i= (i%4)*4;
+                    if (((JButton) e.getSource()).equals(kalender[i][j])){
+                        if(!IsKeyPressed.isCtrlPressed()) {
+                            resetMarkMode(false);
+                        }
                         if(IsKeyPressed.isShiftPressed()){
+
                             if(hoursMode) {
                                 kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender, true);
                             }else{
@@ -368,7 +386,6 @@ public class Kalender extends JFrame {
                             }
                         }else {
                             MarkHelper.setStartSettet(false);
-                            kalender = MarkHelper.resetShiftMarkedButtons(kalender);
                             if (hoursMode) {
                                 int[] newIndex = getfirstButtonInHourMode(kalender[i][j]);
                                 for (int k = 0; k < 4; k++) {
@@ -401,19 +418,23 @@ public class Kalender extends JFrame {
     private class MarkListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+
             if(!markMode) {
                 markMode = true;
+                mark.setBackground(Colors.lightGreen);
                 MarkHelper.setStartSettet(false);
                 for (int i = 0; i< kalender.length; i++) {
                     for (int j = 0; j < kalender[0].length; j++) {
                         for( ActionListener al : kalender[i][j].getActionListeners() ) {
                             kalender[i][j].removeActionListener( al );
                         }
+                        System.out.println("i: "+ i+ " j:"+j);
                         kalender[i][j].addActionListener(new MarkedButtonListener());
                     }
                 }
                 ((JButton)e.getSource()).setBackground(Colors.lightGreen);
             }else{
+                mark.setBackground(Colors.lightGray);
                 MarkHelper.setStartSettet(false);
                 markMode = false;
                 ((JButton)e.getSource()).setBackground(Colors.lightGray);
@@ -446,7 +467,7 @@ public class Kalender extends JFrame {
     }
 
     public void print(){
-        resetMarkMode(true);
+        resetMarkMode(false);
         Printer.writeCSV(csvFile, kalender);
         Printer.write(currentlyDisplayedFile, kalender);
     }
