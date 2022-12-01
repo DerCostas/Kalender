@@ -78,9 +78,6 @@ public class MarkHelper {
             startSettet =  true;
             return array;
         }else{
-
-
-
             for (int i = 0; i < array.length; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                     for(int k = 0; k < selectList.size(); k++){
@@ -91,6 +88,14 @@ public class MarkHelper {
                     if (button.equals(array[i][j])) {
                         endI = i;
                         endY = j;
+                        if(parent.isHoursMode()) {
+                            if (startI < endI) {
+                                startI = startI + 3;
+                            } else {
+                                endI = endI + 3;
+                            }
+                        }
+
                     }
                 }
             }

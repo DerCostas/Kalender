@@ -225,6 +225,7 @@ public class MultiSelectWindow extends JPanel {
                 selected.get(i).setBackground(temp.getBackground());
             }
             selected = new LinkedList<JButton>();
+            MarkHelper.setStartSettet(false);
         }
     }
 

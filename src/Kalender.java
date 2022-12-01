@@ -353,10 +353,12 @@ public class Kalender extends JFrame {
                         i= (i%4)*4;
                         if(IsKeyPressed.isShiftPressed()){
                             kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender);
-                            for (int k = 0; k < kalender.length; k++) {
-                                for (int h = 0; h< kalender[0].length; h++) {
-                                    if(MarkHelper.isSelected(kalender[k][h])){
-                                        changeSelect.addToList(kalender[k][h]);
+                            if(MarkHelper.isStartSettet()) {
+                                for (int k = 0; k < kalender.length; k++) {
+                                    for (int h = 0; h < kalender[0].length; h++) {
+                                        if (MarkHelper.isSelected(kalender[k][h])) {
+                                            changeSelect.addToList(kalender[k][h]);
+                                        }
                                     }
                                 }
                             }
@@ -395,6 +397,7 @@ public class Kalender extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if(!markMode) {
                 markMode = true;
+                MarkHelper.setStartSettet(false);
                 for (int i = 0; i< kalender.length; i++) {
                     for (int j = 0; j < kalender[0].length; j++) {
                         for( ActionListener al : kalender[i][j].getActionListeners() ) {
