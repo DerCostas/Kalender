@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MarkHelper {
 
-    private static int smallI, bigI, smallJ, bigJ;
+    private static int endI, startI, endJ, startJ;
     private static boolean startSettet;
 
     private static List<JButton> selectList = new LinkedList<JButton>();
@@ -64,13 +64,17 @@ public class MarkHelper {
         return button;
     }
 
-    public static JButton[][] makeShiftSelected(JButton button, JButton[][] array){
+    public static JButton[][] makeShiftSelected(JButton button, JButton[][] array, boolean hourmode){
+        int disposition = 0;
+        if(hourmode){
+            disposition = 3;
+        }
         if(!startSettet) {
             for (int i = 0; i < array.length; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                     if (button.equals(array[i][j])) {
-                        smallI = i;
-                        smallJ = j;
+                        startI = i;
+                        startJ = j;
                         array[i][j] = makeSelected(button);
                     }
                 }
@@ -85,23 +89,26 @@ public class MarkHelper {
                             array[i][j] = makeNotSelected(array[i][j]);
                         }
                     }
-//                    if (button.equals(array[i][j])) {
-//                        endI = i;
-//                        endY = j;
-//                        if(parent.isHoursMode()) {
-//                            if (startI < endI) {
-//                                startI = startI + 3;
-//                            } else {
-//                                endI = endI + 3;
-//                            }
-//                        }
-//
-//                    }
+                    if (button.equals(array[i][j])) {
+                        endI = i;
+                        endJ = j;
+                        if(parent.isHoursMode()) {
+                            if (startI < endI) {
+                                endI = endI + disposition;
+                            } else {
+                                int temp = startI;
+                                startI = endI;
+                                endI = temp;
+                                endI = endI + disposition;
+                            }
+                        }
+
+                    }
                 }
             }
 
-            for (int i = smallI; i<= bigI; i++ ){
-                for (int j = smallJ; j<= bigJ; j++){
+            for (int i = startI; i<= endI; i++ ){
+                for (int j = startJ; j<= endJ; j++){
                     array[i][j] = makeSelected(array[i][j]);
                     selectList.add(array[i][j]);
                 }
@@ -110,6 +117,19 @@ public class MarkHelper {
         }
     }
 
+    public static JButton[][] resetShiftMarkedButtons(JButton[][] array){
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++) {
+                for (int k = 0; k < selectList.size(); k++) {
+                    if (array[i][j].equals(selectList.get(k))) {
+                        array[i][j] = makeNotSelected(array[i][j]);
+                    }
+                }
+            }
+        }
+        selectList = new LinkedList<JButton>();
+        return array;
+    }
     public void setStart(int i, int j){
         startI = i;
         startJ = j;

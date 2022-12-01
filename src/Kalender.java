@@ -352,7 +352,11 @@ public class Kalender extends JFrame {
                     if (((JButton) e.getSource()).equals(kalender[(i%4)*4][j])){
                         i= (i%4)*4;
                         if(IsKeyPressed.isShiftPressed()){
-                            kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender);
+                            if(hoursMode) {
+                                kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender, true);
+                            }else{
+                                kalender = MarkHelper.makeShiftSelected(kalender[i][j], kalender, false);
+                            }
                             if(MarkHelper.isStartSettet()) {
                                 for (int k = 0; k < kalender.length; k++) {
                                     for (int h = 0; h < kalender[0].length; h++) {
@@ -363,6 +367,8 @@ public class Kalender extends JFrame {
                                 }
                             }
                         }else {
+                            MarkHelper.setStartSettet(false);
+                            kalender = MarkHelper.resetShiftMarkedButtons(kalender);
                             if (hoursMode) {
                                 int[] newIndex = getfirstButtonInHourMode(kalender[i][j]);
                                 for (int k = 0; k < 4; k++) {
