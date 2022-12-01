@@ -247,14 +247,16 @@ public class Kalender extends JFrame {
                     if(e.getSource() == kalender[i][j]){
                         ButtonSelection asking = new ButtonSelection();
                         JButton returnValue = asking.showDialog();
+                        int newIndex[] = getfirstButtonInHourMode(kalender[i][j]);
                         if(returnValue == null) return;
-                        kalender[i][j].setText(returnValue.getText());
-                        kalender[i][j].setBackground(returnValue.getBackground());
                         if(hoursMode){
-                            for(int k = 1; k<4; k++){
-                                kalender[((i%4)*4)+k][j].setText(returnValue.getText());
-                                kalender[((i%4)*4)+k][j].setBackground(returnValue.getBackground());
+                            for(int k = 0; k<4; k++){
+                                kalender[newIndex[0]+k][newIndex[1]].setText(returnValue.getText());
+                                kalender[newIndex[0]+k][newIndex[1]].setBackground(returnValue.getBackground());
                             }
+                        }else{
+                            kalender[i][j].setText(returnValue.getText());
+                            kalender[i][j].setBackground(returnValue.getBackground());
                         }
 
 
@@ -265,14 +267,36 @@ public class Kalender extends JFrame {
         }
     }
 
+    public int[] getfirstButtonInHourMode(JButton button){
+        for(int i = 0; i < kalender.length; i++){
+            for(int j = 0; j < kalender[0].length; j++) {
+                if(button.equals(kalender[i][j])){
+                    switch (i%4) {
+                        case 0:
+                            return new int[]{i, j};
+                        case 1:
+                            return new int[]{i - 1, j};
+                        case 2:
+                            return new int[]{i - 2, j};
+                        case 3:
+                            return new int[]{i - 3, j};
+                    }
+
+                }
+            }
+        }
+        return new int[]{-1,-1};
+    }
+
     public void resetMarkMode(boolean fullReset){
         for (int i = 0; i< kalender.length; i++){
             for (int j = 0; j< kalender[0].length; j++){
                 kalender[i][j] =MarkHelper.makeNotSelected(kalender[i][j]);
-                for( ActionListener al : kalender[i][j].getActionListeners() ) {
-                    kalender[i][j].removeActionListener( al );
-                }
+
                 if(fullReset) {
+                    for( ActionListener al : kalender[i][j].getActionListeners() ) {
+                        kalender[i][j].removeActionListener( al );
+                    }
                     kalender[i][j].addActionListener(new ButtonListener());
                 }
             }
@@ -338,13 +362,14 @@ public class Kalender extends JFrame {
                             }
                         }else {
                             if (hoursMode) {
+                                int[] newIndex = getfirstButtonInHourMode(kalender[i][j]);
                                 for (int k = 0; k < 4; k++) {
                                     if (MarkHelper.isSelected(kalender[i + k][j])) {
-                                        kalender[i + k][j] = MarkHelper.makeNotSelected(kalender[i + k][j]);
-                                        changeSelect.removeFromList(kalender[i + k][j]);
+                                        kalender[newIndex[0]+k][newIndex[1]] = MarkHelper.makeNotSelected(kalender[newIndex[0]+k][newIndex[1]]);
+                                        changeSelect.removeFromList(kalender[newIndex[0]+k][newIndex[1]]);
                                     } else {
-                                        kalender[i + k][j] = MarkHelper.makeSelected(kalender[i + k][j]);
-                                        changeSelect.addToList(kalender[i + k][j]);
+                                        kalender[newIndex[0]+k][newIndex[1]] = MarkHelper.makeSelected(kalender[newIndex[0]+k][newIndex[1]]);
+                                        changeSelect.addToList(kalender[newIndex[0]+k][newIndex[1]]);
                                     }
                                 }
                             } else {
