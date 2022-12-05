@@ -8,7 +8,7 @@ public class Kalender extends JFrame {
 
 
     private JButton[][] kalender = new JButton[61][7]; //15*4+1
-    private JButton select, mark, hours, quadHours;
+    private JButton select, mark, hours, quadHours, defaultFile;
     private final JLabel[] labels = new JLabel[68];// 7+ (4*15+1)
     private final JLabel[] blanks = new JLabel[20];
     private JPanel center;
@@ -19,16 +19,18 @@ public class Kalender extends JFrame {
     private boolean markMode = true;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
-    private final String weekOneSaveFile ="Resources\\WeekOneSaveFile";
-    private final String weekTwoSaveFile ="Resources\\WeekTwoSaveFile";
-    private final String weekThreeSaveFile ="Resources\\WeekThreeSaveFile";
-    private final String weekFourSaveFile ="Resources\\WeekFourSaveFile";
-    private final String currentlyDisplayedFile = weekOneSaveFile;
+    private final String weekOneSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekOneSaveFile";
+    private final String weekTwoSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekTwoSaveFile";
+    private final String weekThreeSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekThreeSaveFile";
+    private final String weekFourSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekFourSaveFile";
+    private final String defaultSaveFile = "D:\\programming\\timer\\Kalender\\Resources\\Default";
+    private final String emptySaveFile = "D:\\programming\\timer\\Kalender\\Resources\\EmptyKalender";
+    private String currentlyDisplayedFile = weekOneSaveFile;
 
 
 
 
-    private final String csvFile ="Resources\\Kalender.csv";
+    private final String csvFile ="D:\\programming\\timer\\Kalender\\Resources\\Kalender.csv";
 
     MultiSelectWindow changeSelect;
     public Kalender(){
@@ -67,7 +69,7 @@ public class Kalender extends JFrame {
             top.setLayout(new GridLayout(1,5));
             top.add(select);
             top.add(mark);
-            top.add(blanks[1]);
+            top.add(defaultFile);
             top.add(hours);
             top.add(quadHours);
             kalenderPanel.add(center, BorderLayout.CENTER);
@@ -122,6 +124,9 @@ public class Kalender extends JFrame {
     }
 
     public void buildButtons(){
+        defaultFile = new JButton("Default");
+        defaultFile.addActionListener(new DefaultListener());
+
         select = new JButton("Menu");
         select.addActionListener(new MenuListener());
         select.setBackground(Colors.lightGray);
@@ -194,6 +199,7 @@ public class Kalender extends JFrame {
     public void changeMode(){
         center.removeAll();
         if(hoursMode) {
+
 
             kalender=read();
             center.setLayout(new GridLayout(17, 8));
@@ -444,13 +450,9 @@ public class Kalender extends JFrame {
     }
 
 
-    private class ClearListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int input = JOptionPane.showConfirmDialog(thisObjekt,
-                    "Everything is gona be Reset", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
-            // 0=ok
-            if(input != 0) return;
+
+
+        public void clearKalender() {
             for (JButton[] jButtons : kalender) {
                 for (int j = 0; j < kalender[0].length; j++) {
                     jButtons[j].setBackground(Colors.lightGreen);
@@ -458,8 +460,35 @@ public class Kalender extends JFrame {
                 }
             }
             print();
+
+    }
+
+    private class DefaultListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(thisObjekt,
+                    "Current Week is gona be set to Default", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            print();
+            resetMarkMode(false);
+            kalender = Printer.read(defaultSaveFile, kalender);
+            print();
+            changeMode();
+
         }
     }
+
+    private JButton[][] makeJButtonArray(){
+        JButton[][] temp = new JButton[kalender.length][kalender[0].length];
+        for (int i =0; i< temp.length; i++){
+            for (int j = 0; j< temp[0].length; j++){
+                temp[i][j] = new JButton();
+            }
+        }
+        return temp;
+    }
+
 
     public void refresh(){
         this.setVisible(false);
@@ -470,6 +499,11 @@ public class Kalender extends JFrame {
         resetMarkMode(false);
         Printer.writeCSV(csvFile, kalender);
         Printer.write(currentlyDisplayedFile, kalender);
+    }
+
+    public void printInto(String file){
+        resetMarkMode(false);
+        Printer.write(file, kalender);
     }
 
     public JButton[][] read(){
@@ -559,4 +593,38 @@ public class Kalender extends JFrame {
     public String getCsvFile() {
         return csvFile;
     }
+
+    public String getCurrentlyDisplayedFile() {
+        return currentlyDisplayedFile;
+    }
+
+    public void setCurrentlyDisplayedFile(String currentlyDisplayedFile){
+        this.currentlyDisplayedFile = currentlyDisplayedFile;
+    }
+
+    public String getWeekOneSaveFile() {
+        return weekOneSaveFile;
+    }
+
+    public String getWeekTwoSaveFile() {
+        return weekTwoSaveFile;
+    }
+
+    public String getWeekThreeSaveFile() {
+        return weekThreeSaveFile;
+    }
+
+    public String getWeekFourSaveFile() {
+        return weekFourSaveFile;
+    }
+
+    public String getDefaultSaveFile() {
+        return defaultSaveFile;
+    }
+
+    public String getEmptySaveFile() {
+        return emptySaveFile;
+    }
 }
+
+

@@ -19,14 +19,15 @@ public class MultiSelectWindow extends JPanel {
     private JPanel weeksPanel, cellEditPanel;
     private final int parentSizer = 260;
 
+    MultiSelectWindow thisObjekt = this;
+
     LinkedList<JButton> selected;
+
     MultiSelectWindow( Kalender kalender){
         selected = new LinkedList<JButton>();
         parent = kalender;
         buildButtons();
         buildLayout();
-
-
     }
 
 
@@ -92,29 +93,30 @@ public class MultiSelectWindow extends JPanel {
         cellEditPanel.setBorder(parent.getBlackline());
 
         moveUp = new javax.swing.JButton();
-        moveUp.addActionListener(new MoveListener());
+        moveUp.addActionListener(new MoveUpListener());
         moveDown = new javax.swing.JButton();
-        moveDown.addActionListener(new MoveListener());
+        moveDown.addActionListener(new MoveDownListener());
         weekOne = new javax.swing.JToggleButton();
-        weekOne.addActionListener(new WeeksListener());
+        weekOne.addActionListener(new WeeksOneListener());
+        weekOne.setSelected(true);
         weekTwo = new javax.swing.JToggleButton();
-        weekTwo.addActionListener(new WeeksListener());
+        weekTwo.addActionListener(new WeeksTwoListener());
         weekThree = new javax.swing.JToggleButton();
-        weekThree.addActionListener(new WeeksListener());
+        weekThree.addActionListener(new WeeksThreeListener());
         weekFour = new javax.swing.JToggleButton();
-        weekFour.addActionListener(new WeeksListener());
+        weekFour.addActionListener(new WeeksFourListener());
         cloneOne = new javax.swing.JButton();
-        cloneOne.addActionListener(new CloneListener());
+        cloneOne.addActionListener(new CloneOneListener());
         cloneTwo = new javax.swing.JButton();
-        cloneTwo.addActionListener(new CloneListener());
+        cloneTwo.addActionListener(new CloneTwoListener());
         cloneThree = new javax.swing.JButton();
-        cloneThree.addActionListener(new CloneListener());
+        cloneThree.addActionListener(new CloneThreeListener());
         cloneFour = new javax.swing.JButton();
-        cloneFour.addActionListener(new CloneListener());
+        cloneFour.addActionListener(new CloneFourListener());
         clearAll = new javax.swing.JButton();
-        clearAll.addActionListener(new ClearListener());
+        clearAll.addActionListener(new ClearAllListener());
         clearCurrent = new javax.swing.JButton();
-        clearCurrent.addActionListener(new ClearListener());
+        clearCurrent.addActionListener(new ClearCurrentListener());
 
 
        applyButton =new JButton();
@@ -232,6 +234,7 @@ public class MultiSelectWindow extends JPanel {
             }
             parent.setKalender(array);
             MarkHelper.setStartSettet(false);
+            parent.print();
         }
     }
 
@@ -276,39 +279,197 @@ public class MultiSelectWindow extends JPanel {
 
 
 
-    private class WeeksListener implements ActionListener {
+    private class WeeksOneListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            weekOne.setSelected(true);
+            weekTwo.setSelected(false);
+            weekThree.setSelected(false);
+            weekFour.setSelected(false);
 
+            if(!parent.getCurrentlyDisplayedFile().equals(parent.getWeekOneSaveFile())) {
+                parent.print();
+                parent.setCurrentlyDisplayedFile(parent.getWeekOneSaveFile());
+                parent.changeMode();
+            }
+        }
+    }
+
+    private class WeeksTwoListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            weekOne.setSelected(false);
+            weekTwo.setSelected(true);
+            weekThree.setSelected(false);
+            weekFour.setSelected(false);
+
+            if(!parent.getCurrentlyDisplayedFile().equals(parent.getWeekTwoSaveFile())) {
+                parent.print();
+                parent.setCurrentlyDisplayedFile(parent.getWeekTwoSaveFile());
+                parent.changeMode();
+            }
+        }
+    }
+
+    private class WeeksThreeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            weekTwo.setSelected(false);
+            weekOne.setSelected(false);
+            weekThree.setSelected(true);
+            weekFour.setSelected(false);
+
+            if(!parent.getCurrentlyDisplayedFile().equals(parent.getWeekThreeSaveFile())) {
+                parent.print();
+                parent.setCurrentlyDisplayedFile(parent.getWeekThreeSaveFile());
+                parent.changeMode();
+            }
+        }
+    }
+
+    private class WeeksFourListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            weekTwo.setSelected(false);
+            weekThree.setSelected(false);
+            weekOne.setSelected(false);
+            weekFour.setSelected(true);
+
+            if(!parent.getCurrentlyDisplayedFile().equals(parent.getWeekFourSaveFile())) {
+                parent.print();
+                parent.setCurrentlyDisplayedFile(parent.getWeekFourSaveFile());
+                parent.changeMode();
+            }
+        }
+    }
+
+    private class CloneOneListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "Week One will be copied into current Week", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            parent.setKalender(Printer.read(parent.getWeekOneSaveFile(), parent.getKalender()));
+            parent.print();
+        }
+    }
+
+    private class CloneTwoListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "Week Two will be copied into current Week", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            parent.setKalender(Printer.read(parent.getWeekTwoSaveFile(), parent.getKalender()));
+            parent.print();
 
         }
     }
 
-    private class CloneListener implements ActionListener {
+    private class CloneThreeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "Week Three will be copied into current Week", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            parent.setKalender(Printer.read(parent.getWeekThreeSaveFile(), parent.getKalender()));
+            parent.print();
+        }
+    }
+    private class CloneFourListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "Week Four will be copied into current Week", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            parent.setKalender(Printer.read(parent.getWeekFourSaveFile(), parent.getKalender()));
+            parent.print();
+        }
+    }
 
+    private class ClearCurrentListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "Current Week is gona be cleared", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+            parent.clearKalender();
+        }
+    }
+
+    private class ClearAllListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "All Weeks is gona be cleared", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
+
+            parent.setKalender(Printer.read(parent.getEmptySaveFile(), parent.getKalender()));
+            parent.setCurrentlyDisplayedFile(parent.getWeekOneSaveFile());
+            parent.print();
+            parent.setKalender(Printer.read(parent.getEmptySaveFile(), parent.getKalender()));
+            parent.setCurrentlyDisplayedFile(parent.getWeekTwoSaveFile());
+            parent.print();
+            parent.setKalender(Printer.read(parent.getEmptySaveFile(), parent.getKalender()));
+            parent.setCurrentlyDisplayedFile(parent.getWeekThreeSaveFile());
+            parent.print();
+            parent.setKalender(Printer.read(parent.getEmptySaveFile(), parent.getKalender()));
+            parent.setCurrentlyDisplayedFile(parent.getWeekFourSaveFile());
+            parent.print();
 
         }
     }
 
-    private class ClearListener implements ActionListener {
+
+
+    private class MoveUpListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "All Weeks is gona be cleared", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
 
+            parent.setKalender(Printer.read(parent.getWeekTwoSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekOneSaveFile());
+            parent.setKalender(Printer.read(parent.getWeekThreeSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekTwoSaveFile());
+            parent.setKalender(Printer.read(parent.getWeekFourSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekThreeSaveFile());
+            parent.setKalender(Printer.read(parent.getDefaultSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekFourSaveFile());
 
         }
     }
 
-    private class MoveListener implements ActionListener {
+    private class MoveDownListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            int input = JOptionPane.showConfirmDialog(parent,
+                    "All Weeks are gona be moved one down", "Are you Sure", JOptionPane.OK_CANCEL_OPTION);
+            // 0=ok
+            if(input != 0) return;
 
+
+
+
+            parent.setKalender(Printer.read(parent.getWeekThreeSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekFourSaveFile());
+            parent.setKalender(Printer.read(parent.getWeekTwoSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekThreeSaveFile());
+            parent.setKalender(Printer.read(parent.getWeekOneSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekTwoSaveFile());
+            parent.setKalender(Printer.read(parent.getDefaultSaveFile(), parent.getKalender()));
+            parent.printInto(parent.getWeekOneSaveFile());
 
         }
     }
-
-
 
 
     public List showDialog(){
@@ -478,10 +639,6 @@ public class MultiSelectWindow extends JPanel {
 
         MultiSelectWindow window = new MultiSelectWindow(new Kalender());
         window.setVisible(true);
-        JFrame test = new JFrame();
 
-        test.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        test.getContentPane().add(window);
-        test.setVisible(true);
     }
 }

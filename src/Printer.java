@@ -38,6 +38,7 @@ public class Printer {
         try {
             text = Files.readString(Path.of(filename));
         }catch (Exception e ){
+
             return null;
         }
         String[] buttons = text.split("€");
@@ -63,7 +64,7 @@ public class Printer {
             text += "\n";
         }
         try {
-            FileWriter writer = new FileWriter(fileName);
+            FileWriter writer = new FileWriter(fileName, false);
             writer.write(text);
             writer.close();
         }catch (Exception e ){
