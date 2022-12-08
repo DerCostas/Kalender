@@ -82,8 +82,6 @@ public class ButtonSelection extends JDialog {
         jRadioButton10 = new javax.swing.JRadioButton();
         jRadioButton10.addActionListener(new AuswahlListener() );
 
-        // jRadioButton9= Colors.colourRadioButtons(jRadioButton9);
-
         buttonGroup = new ButtonGroup();
         buttonGroup.add(jRadioButton1);
         buttonGroup.add(jRadioButton2);

@@ -132,12 +132,6 @@ public class MarkHelper {
         selectList = new LinkedList<JButton>();
         return array;
     }
-    public void setStart(int i, int j){
-        startI = i;
-        startJ = j;
-    }
-
-    //TODO: nicht einen punkt fixieren und dann immer 2. verändern, sonder immer den näheren verändern
     public JButton[][] getMarkedButons(int i, int j, JButton[][] array){
         JButton[][] temp = new JButton[i-startI][j-startJ];
         int iCounter = 0;
@@ -158,10 +152,6 @@ public class MarkHelper {
 
     public static void setStartSettet(boolean startSettet) {
         MarkHelper.startSettet = startSettet;
-    }
-
-    public static Kalender getParent() {
-        return parent;
     }
 
     public static void setParent(Kalender parent) {

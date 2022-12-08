@@ -633,12 +633,4 @@ public class MultiSelectWindow extends JPanel {
                                 .addContainerGap(52, Short.MAX_VALUE))
         );
     }
-
-    public static void main(String[] args){
-
-
-        MultiSelectWindow window = new MultiSelectWindow(new Kalender());
-        window.setVisible(true);
-
-    }
 }

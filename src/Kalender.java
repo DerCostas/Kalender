@@ -3,6 +3,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Kalender extends JFrame {
 
@@ -11,7 +13,7 @@ public class Kalender extends JFrame {
     private JButton select, mark, hours, quadHours, defaultFile;
     private final JLabel[] labels = new JLabel[68];// 7+ (4*15+1)
     private final JLabel[] blanks = new JLabel[20];
-    private JPanel center;
+    private JPanel center, top;
     private final Kalender thisObjekt = this;
 
     private boolean hoursMode = true;
@@ -19,15 +21,20 @@ public class Kalender extends JFrame {
     private boolean markMode = true;
 
     private final Border blackline = BorderFactory.createLineBorder(Color.gray);
+
+    private final Border smallRed = BorderFactory.createLineBorder(Color.red, 2);
+    private final Border bigRed = BorderFactory.createLineBorder(Color.red, 5);
     private final String weekOneSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekOneSaveFile";
     private final String weekTwoSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekTwoSaveFile";
     private final String weekThreeSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekThreeSaveFile";
     private final String weekFourSaveFile ="D:\\programming\\timer\\Kalender\\Resources\\WeekFourSaveFile";
     private final String defaultSaveFile = "D:\\programming\\timer\\Kalender\\Resources\\Default";
     private final String emptySaveFile = "D:\\programming\\timer\\Kalender\\Resources\\EmptyKalender";
+
+    private final ImageIcon icon = new ImageIcon("D:\\programming\\timer\\Kalender\\Resources\\KalenderIcon.png");
     private String currentlyDisplayedFile = weekOneSaveFile;
 
-
+    Timer selectCurrentButton , tempTimer;
 
 
     private final String csvFile ="D:\\programming\\timer\\Kalender\\Resources\\Kalender.csv";
@@ -45,6 +52,61 @@ public class Kalender extends JFrame {
         buildKalender();
         buildButtons();
         manageLayouts();
+        startTimer();
+
+        selectCurrentTime();
+        selectCurrentButton.start();
+    }
+
+    public void startTimer(){
+        selectCurrentButton = new Timer((int) (900000-((new Date(System.currentTimeMillis()).getTime()%86400000)%3600000)%900000), new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectCurrentButton.setDelay(300000);
+                selectCurrentTime();
+                System.out.println(selectCurrentButton.getDelay());
+            }
+        });
+
+    }
+
+    public void selectCurrentTime(){
+        int minutes = Integer.parseInt ( new SimpleDateFormat("mm").format(new Date(System.currentTimeMillis())));
+        int hours = Integer.parseInt ( new SimpleDateFormat("kk").format(new Date(System.currentTimeMillis())));
+        int weekday = Integer.parseInt ( new SimpleDateFormat("u").format(new Date(System.currentTimeMillis())))-1;
+        int currentI;
+        if(hoursMode) {
+            if(hours < 7){
+                currentI = 0;
+            }else if(hours >= 22) {
+                currentI = kalender.length-1;
+            }
+            else{
+                currentI = ((hours - 7) * 4);
+            }
+            if(kalender[currentI][weekday].getBorder().equals(smallRed) || kalender[currentI][weekday].getBorder().equals(smallRed)){
+                return;
+            }
+            for(int i = 0; i<kalender.length;i++) {
+                for (int j = 0; j< kalender[0].length;j++) {
+                    kalender[i][j].setBorder(blackline);
+                }
+            }
+            kalender[currentI][weekday].setBorder(bigRed);
+        }else{
+            currentI =((hours-7)*4)+(minutes/15);
+            if(kalender[currentI][weekday].getBorder().equals(smallRed) || kalender[currentI][weekday].getBorder().equals(smallRed)){
+                return;
+            }
+            for(int i = 0; i<kalender.length;i++) {
+                for (int j = 0; j< kalender[0].length;j++) {
+                    kalender[i][j].setBorder(blackline);
+                }
+            }
+            kalender[currentI][weekday].setBorder(smallRed);
+        }
+        kalender[currentI][weekday].setVisible(false);
+        kalender[currentI][weekday].setVisible(true);
     }
 
     public void buildPanel(){
@@ -52,6 +114,7 @@ public class Kalender extends JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Kalender");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setIconImage(icon.getImage());
         this.setAlwaysOnTop(false);
         this.setFocusable(true);
         this.requestFocus();
@@ -64,14 +127,15 @@ public class Kalender extends JFrame {
             this.setLayout(new BorderLayout());
             center = new JPanel();
 
-            changeMode();
-        JPanel top = new JPanel();
+
+            top = new JPanel();
             top.setLayout(new GridLayout(1,5));
             top.add(select);
             top.add(mark);
             top.add(defaultFile);
             top.add(hours);
             top.add(quadHours);
+        changeMode();
             kalenderPanel.add(center, BorderLayout.CENTER);
         kalenderPanel.add(top, BorderLayout.PAGE_START);
         add(kalenderPanel,BorderLayout.CENTER);
@@ -85,6 +149,7 @@ public class Kalender extends JFrame {
                 kalender[i][j].setVisible(true);
                 kalender[i][j].setBackground(Color.green);
                 kalender[i][j].setText("Frei");
+                kalender[i][j].setBorder(blackline);
                 kalender[i][j].setFont(new Font("Verdana", Font.BOLD, 14));
                 if(markMode){
                     kalender[i][j].addActionListener(new MarkedButtonListener());
@@ -126,6 +191,7 @@ public class Kalender extends JFrame {
     public void buildButtons(){
         defaultFile = new JButton("Default");
         defaultFile.addActionListener(new DefaultListener());
+        defaultFile.setBackground(Colors.lightGreen);
 
         select = new JButton("Menu");
         select.addActionListener(new MenuListener());
@@ -254,6 +320,7 @@ public class Kalender extends JFrame {
             mark.setBackground(Colors.lightGray);
         }
         resetMarkMode(false);
+        selectCurrentTime();
         refresh();
     }
 
@@ -479,20 +546,13 @@ public class Kalender extends JFrame {
         }
     }
 
-    private JButton[][] makeJButtonArray(){
-        JButton[][] temp = new JButton[kalender.length][kalender[0].length];
-        for (int i =0; i< temp.length; i++){
-            for (int j = 0; j< temp[0].length; j++){
-                temp[i][j] = new JButton();
-            }
-        }
-        return temp;
-    }
-
-
     public void refresh(){
-        this.setVisible(false);
-        this.setVisible(true);
+        center .setVisible(false);
+        center .setVisible(true);
+        top .setVisible(false);
+        top .setVisible(true);
+        changeSelect.setVisible(false);
+        changeSelect.setVisible(true);
     }
 
     public void print(){
@@ -510,10 +570,7 @@ public class Kalender extends JFrame {
         return Printer.read(currentlyDisplayedFile, kalender);
     }
 
-    public static void main(String[] args){
-        JFrame frame = new Kalender();
-        frame.setVisible(true);
-    }
+
 
     public void setSelectMode(boolean selectMode) {
         this.menuMode = selectMode;
@@ -527,72 +584,14 @@ public class Kalender extends JFrame {
         this.kalender = kalender;
     }
 
-    public JButton getSelect() {
-        return select;
-    }
-
-    public void setSelect(JButton select) {
-        this.select = select;
-    }
-
-
-    public JButton getHours() {
-        return hours;
-    }
-
-    public void setHours(JButton hours) {
-        this.hours = hours;
-    }
-
-    public JButton getQuadHours() {
-        return quadHours;
-    }
-
-    public void setQuadHours(JButton quadHours) {
-        this.quadHours = quadHours;
-    }
-
-
-
-    public JLabel[] getLabels() {
-        return labels;
-    }
-
-    public JLabel[] getBlanks() {
-        return blanks;
-    }
-
-    public JPanel getCenter() {
-        return center;
-    }
-
-    public void setCenter(JPanel center) {
-        this.center = center;
-    }
-
-    public Kalender getThisObjekt() {
-        return thisObjekt;
-    }
-
     public boolean isHoursMode() {
         return hoursMode;
-    }
-
-    public void setHoursMode(boolean hoursMode) {
-        this.hoursMode = hoursMode;
-    }
-
-    public boolean isSelectMode() {
-        return menuMode;
     }
 
     public Border getBlackline() {
         return blackline;
     }
 
-    public String getCsvFile() {
-        return csvFile;
-    }
 
     public String getCurrentlyDisplayedFile() {
         return currentlyDisplayedFile;
@@ -624,6 +623,11 @@ public class Kalender extends JFrame {
 
     public String getEmptySaveFile() {
         return emptySaveFile;
+    }
+
+    public static void main(String[] args){
+        JFrame frame = new Kalender();
+        frame.setVisible(true);
     }
 }
 

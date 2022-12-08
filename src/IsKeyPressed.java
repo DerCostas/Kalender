@@ -30,12 +30,16 @@ public class IsKeyPressed {
             @Override
             public boolean dispatchKeyEvent(KeyEvent ke) {
                 if (ke.isControlDown()) {
-                    ctrlPressed = true;
-                }else {
-                    ctrlPressed = false;
-                }
+                        ctrlPressed = true;
+                    } else {
+                        ctrlPressed = false;
+                    }
                 return false;
             }
         });
+
+
+
+
     }
 }
